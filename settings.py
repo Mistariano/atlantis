@@ -1,0 +1,11 @@
+__author__ = 'MisT'
+
+
+SIZE_SENSOR = 2
+SIZE_OUTPUT = 2
+RATE_ADDN = 0.05
+RATE_ADDS = 0.05
+RATE_MUTATION = 0.2
+MAX_N = 0.5
+MAX_S = 0.5
+
