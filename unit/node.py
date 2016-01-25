@@ -2,9 +2,8 @@ __author__ = 'MisT'
 
 
 class Node:
-    def __init__(self,threshold,numUnit):
+    def __init__(self,threshold):
         self.threshold=threshold
-        self.numUnit=numUnit
         self.battery=0
         self.sons=[]
         self.weights=[]
@@ -15,6 +14,7 @@ class Node:
 
     def charge(self,quantity):
         self.battery+=(quantity-self.threshold)
+        # print 'I\'m charged! Now my battery is',self.battery
 
     def discharge(self):
         q=self.sigmoid(self.battery)
@@ -23,10 +23,17 @@ class Node:
             s.charge(quantity=q*self.weights[p])
             p+=1
         self.battery=0
+        # print 'PIKAPIKA~CHU!!!! (',q,')'
         return q
 
     def sigmoid(self,n):
         return 1/(1+pow(2.718,-n))
+
+    def debug(self):
+        print 'Infos of \'this\' node:'
+        print 'Sons:',self.sons
+        print 'Weights:',self.weights
+        print 'Threshold:',self.threshold
 
 
 if __name__=='__main__':
