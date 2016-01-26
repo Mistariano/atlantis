@@ -1,6 +1,7 @@
 __author__ = 'MisT'
 
 import copy
+import os
 
 
 class GeneStructure:
@@ -23,25 +24,27 @@ class GeneStructure:
     def appendNeuron(self):
         self.neurons.append([])
         self.sizeN+=1
-        return self.sizeN-1
+        return len(self.neurons)-1
 
     def appendSynapse(self,origin,terminus):
         self.neurons[origin].append(terminus)
         self.sizeS+=1
 
     def sort(self):
-        father=[0]*self.sizeN
+        father=[0 for i in range(0,len(self.neurons))]
         p=0
         for i in self.neurons:
             for j in i:
                 father[j]+=1
-        for i in range(0,self.sizeN):
+        for i in range(0,len(self.neurons)):
             if not father[i]:
+                father[i]=-1
                 self.order.append(i)
-        while p<len(self.order):
+        while p<len(self.neurons):
             for j in self.neurons[self.order[p]]:
                 father[j]-=1
                 if not father[j]:
+                    father[j]=-1
                     self.order.append(j)
             p+=1
 

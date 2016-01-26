@@ -18,7 +18,7 @@ class Unit:
     def translate(self):
         p=0
         self.neurons=[Node(threshold=i) for i in self.gene.thresholds]
-        for i in range(0,self.structure.sizeN):
+        for i in range(0,len(self.structure.neurons)):
             for j in self.structure.neurons[i]:
                 self.neurons[i].appendSon(son=self.neurons[j],weight=self.gene.weights[p])
                 p+=1
@@ -28,11 +28,13 @@ class Unit:
         for i in self.layerSensor:
             self.neurons[i].charge(quantity=inputs[p])
             p+=1
+        # print 'size:',len(self.neurons)
         for i in self.order :
             if i not in self.layerOutput:
+                # print'i:',i
                 self.neurons[i].discharge()
         outputs=[self.neurons[o].discharge() for o in self.layerOutput]
-        print outputs
+        # print outputs
         return outputs
 
     def debug(self):
