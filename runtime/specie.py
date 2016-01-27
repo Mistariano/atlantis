@@ -4,66 +4,91 @@ from unit.unit import Unit
 from random import choice
 from gene.mate import mate
 from gene.gene import Gene
-from settings import SPEED_MUTATION,SPEED_MATE,SIZE_BOARD,SIZE_OUTPUT,SIZE_SENSOR
-from unitplay import UnitPlay
-from goplay.gopoint import GoPoint
-import os
+from settings import SPEED_MUTATION,SPEED_MATE,SIZE_BOARD,SIZE_OUTPUT,SIZE_SENSOR,WHO_MATE
 
 class Specie:
-    def __init__(self,firstMember):
+    cnt=0
+    def __init__(self,firstMember,appearTime):
+        self.num=Specie.cnt
+        Specie.cnt+=1
+        print 'Specie [%d] has been settled.' % self.num
         self.genes=[firstMember]
-        self.billyKing=0
-        self.size=1
         self.newBorn=[]
+        self.newSpiecesList=[]
+        self.dieList=[]
+        self.newGenesList=[firstMember]
+        self.billyKing=firstMember
+        self.appearTime=appearTime
+        self.fitness=0
+        self.sum=0
 
     def load(self,gene):
         return Unit(gene=gene)
 
-    def loop(self):
-        r=[i for i in range(0,len(self.genes))]
-        r.remove(self.billyKing)
-        for i in range(0,SPEED_MATE):
-            if not len(r):
-                break
-            wife=choice(r)
-            new1=mate(gene1=self.genes[self.billyKing],gene2=self.genes[wife])
-            self.newBorn.append(new1)
-            r.remove(wife)
+    def breed(self):
+        if len(self.genes)>1:
+            r=[i for i in (1,WHO_MATE) if i<len(self.genes)]
+            for i in range(0,SPEED_MATE):
+                wife=choice(r)
+                new1=mate(gene1=self.genes[0],gene2=self.genes[wife])
+                self.newGenesList.append(new1)
+                self.genes.append(new1)
         for i in range(0,SPEED_MUTATION):
             tmp=choice(self.genes)
             new1=Gene(structure=tmp.structure,weights=tmp.weights,thresholds=tmp.thresholds)
             new1.mutation()
-            self.newBorn.append(new1)
-        self.sort()
+            self.newGenesList.append(new1)
+            self.genes.append(new1)
         t=choice(self.genes)
         new2=Gene(structure=t.structure,weights=t.weights,thresholds=t.thresholds)
         new3=Gene(structure=t.structure,weights=t.weights,thresholds=t.thresholds)
         new2.addNRand()
-        yield new2
+        self.newSpiecesList.append(new2)
         for n in new3.getSRand(sizeO=SIZE_OUTPUT,sizeS=SIZE_SENSOR):
-            yield n
+            self.newSpiecesList.append(n)
 
+    def newSpecies(self):
+        for n in self.newSpiecesList:
+            yield n
+        self.newSpiecesList=[]
+
+    def newGenes(self):
+        for n in self.newGenesList:
+            yield n
+        self.newGenesList=[]
 
     def sort(self):
-        for new in self.newBorn:
-            un=self.load(gene=new)
-            uk=self.load(gene=self.genes[self.billyKing])
-            res=self.fight(newUnit=un, kingUnit=uk)
-            if res>0:
-                self.billyKing=self.size
-            self.genes.append(new)
-        self.newBorn=[]
+        self.genes.sort(key=lambda x:x.fitness)
+        self.billyKing=self.genes[0]
 
-    def fight(self,newUnit,kingUnit):
-        newPlay1=UnitPlay(size=SIZE_BOARD)
-        newPlay1.loadUnit(ub=newUnit,uw=kingUnit)
-        newPlay1.loop()
-        res=newPlay1.res_cnt[GoPoint.BLACK]-newPlay1.res_cnt[GoPoint.WHITE]
-        newPlay2=UnitPlay(size=SIZE_BOARD)
-        newPlay2.loadUnit(ub=kingUnit,uw=newUnit)
-        newPlay2.loop()
-        res+=newPlay2.res_cnt[GoPoint.WHITE]-newPlay2.res_cnt[GoPoint.BLACK]
-        return res
+    def recountFitness(self):
+        self.sum=0
+        for g in self.genes:
+            self.sum+=g.fitness
+        # self.fitness=len(self.genes)*self.sum
+        self.fitness=self.sum
+
+    def distribute(self,resource):
+        while len(self.genes):
+            if (self.sum-self.genes[-1].fitness)<=resource:
+                break
+            self.sum-=self.genes[-1].fitness
+            yield self.genes[-1]
+            del self.genes[-1]
+
+if __name__=='__main__':
+    class Test:
+        cnt=0
+        def __init__(self):
+            self.num=Test.cnt
+            Test.cnt+=1
+            self.weights=[self.num]
+            self.f=10-self.num
+    t=[Test() for i in range(0,7)]
+    t2=[Test()]
+    t.append(t2[0])
+    del t[-1]
+    print t2
 
 
 

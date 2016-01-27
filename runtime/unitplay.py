@@ -1,3 +1,5 @@
+#coding=utf8
+
 __author__ = 'MisT'
 
 from goplay.goplay import GoPlay
@@ -9,12 +11,12 @@ class UnitPlay(GoPlay):
         self.unitWhite=uw
 
     def end(self):
-        self.to_get=True
+        self.toGet=True
         return GoPlay.end(self)
 
-    def get_xy(self):
-        if self.to_get:
-            self.to_get=False
+    def getXY(self):
+        if self.toGet:
+            self.toGet=False
             if self.nextPlayer:
                 color=GoPoint.BLACK
             else:
@@ -33,8 +35,6 @@ class UnitPlay(GoPlay):
                 self.ans = self.unitBlack.startDash(inputs=inputs)
             else:
                 self.ans = self.unitWhite.startDash(inputs=inputs)
-            # print self.ans
-            # print 'here'
         max=-1
         index=-1
         for i in range(0,len(self.ans)):
@@ -48,3 +48,30 @@ class UnitPlay(GoPlay):
         else:
             self.x=index/self.size+1
             self.y=index%self.size+1
+
+    def output(self):
+        draw=self.draw()
+        print
+        print' ',
+        for i in range(1,self.MAX):
+            print 10+i,
+        print
+        cnt=11
+        for i in draw:
+            print cnt,
+            cnt+=1
+            for j in i:
+                if j==1:
+                    print u'○',
+                if j==2:
+                    print u'●',
+                if j==0:
+                    print '..',
+            print
+
+    def loop(self):
+        GoPlay.loop(self)
+        # print 'Result:'
+        # print 'B:',self.res_cnt[GoPoint.BLACK],'W:',self.res_cnt[GoPoint.WHITE]
+        # if self.res_cnt[GoPoint.BLACK]+self.res_cnt[GoPoint.WHITE]!=self.size**2:
+        #     self.output()

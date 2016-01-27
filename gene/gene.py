@@ -8,15 +8,16 @@ from settings import RATE_MATE,MAX_S,MAX_N
 class Gene:
     cnt=0
     def __init__(self,structure,weights,thresholds):
-        self.numNature=Gene.cnt
+        self.num=Gene.cnt
         Gene.cnt+=1
         self.structure=structure
-        self.numSpecie=self.structure.nextMember
-        self.structure.member+=1
+        # self.num=self.structure.nextMember
         self.structure.nextMember+=1
         self.weights=deepcopy(weights)
         self.thresholds=deepcopy(thresholds)
         self.fitness=0
+        self.record={}
+        print 'Gene <%d> has been born @w@' % self.num
 
     def addNRand(self):
         new=GeneStructure(gsNew=self.structure)

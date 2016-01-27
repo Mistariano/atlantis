@@ -4,9 +4,6 @@ class GoPoint:
     NULL=0
     BLACK=1
     WHITE=2
-    # BLACK_FORBIDDENED=3
-    # WHITE_FORBIDDENED=4
-    # ALL_FORBIDDENED=5
     FORBIDDENED=3
     WALL=6
 
@@ -17,14 +14,12 @@ class GoPoint:
         self.group=[self.x,self.y]
         self.member=[[self.x,self.y]]
         self.qi=-1
-        self.qi_group=0
-        # self.NEXT=[self.x,self.y]
-        # self.LAST=[self.x,self.y]
+        self.qiGroup=0
 
     def move(self,color):
         self.color=color
         self.qi=0
-        self.qi_group=0
+        self.qiGroup=0
 
     def get_member(self):
         for g in self.member:

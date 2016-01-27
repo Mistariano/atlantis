@@ -10,7 +10,6 @@ class GeneStructure:
         self.num=GeneStructure.cnt
         GeneStructure.cnt+=1
         self.order=[]
-        self.member=0
         self.nextMember=0
         try:
             self.neurons=copy.deepcopy(gsNew.neurons)
