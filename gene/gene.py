@@ -4,19 +4,41 @@ from genestructure import GeneStructure
 from random import randrange,choice,uniform
 from copy import deepcopy
 from settings import RATE_MATE,MAX_S,MAX_N
+from runtime import save
 
 class Gene:
     cnt=0
-    def __init__(self,structure,weights,thresholds):
-        self.num=Gene.cnt
-        Gene.cnt+=1
+    def __init__(self,structure,weights,thresholds,fitness=0,record={},num=-1):
+        self.num=num
         self.structure=structure
-        # self.num=self.structure.nextMember
-        self.structure.nextMember+=1
         self.weights=deepcopy(weights)
         self.thresholds=deepcopy(thresholds)
-        self.fitness=0
-        self.record={}
+        self.fitness=fitness
+        self.record=record
+
+    def pack(self):
+        try:
+            if self.num==-1:
+                raise NumException
+            info=\
+            {
+                '_id':self.num,
+                'weights':self.weights,
+                'thresholds':self.thresholds,
+                'fitness':self.fitness,
+                'record':self.record
+            }
+            return info
+        except NumException:
+            print 'NumException'
+        except Exception,e:
+            print Exception,e
+
+
+    def set(self):
+        self.num=Gene.cnt
+        Gene.cnt+=1
+        save.saveGene(info=self.pack())
         print 'Gene <%d> has been born @w@' % self.num
 
     def addNRand(self):
@@ -44,6 +66,8 @@ class Gene:
                 break
         self.structure=new
         self.structure.sort()
+        save.saveStruct(info=new.pack())
+        self.set()
 
     def check(self,x,f,size,mark):
         if x*size+f in mark:
@@ -66,10 +90,12 @@ class Gene:
         while not len(r2):
             try:
                 r1.remove(t1)
-            except:
-                pass
+            except Exception,e:
+                print Exception,e
+            if not len(r1):
+                return
             t1=choice(r1)
-            r2=[i for i in range(sizeS,self.structure.sizeN) if (i not in neu[t1] and t1 not in neu[i])]
+            r2=[i for i in range(sizeS,len(self.structure.neurons)) if (i not in neu[t1] and t1 not in neu[i])]
         t2=choice(r2)
         mark=[]
         size=len(neu)
@@ -81,7 +107,7 @@ class Gene:
             new1.appendSynapse(origin=t1,terminus=t2)
             p=0
             flag=0
-            for i in range(0,new1.sizeN):
+            for i in range(0,len(new1.neurons)):
                 for j in new1.neurons[i]:
                     if j==t2:
                         flag=1
@@ -93,14 +119,17 @@ class Gene:
             wn1.insert(p,0)
             tn1=self.thresholds
             new1.sort()
-            yield Gene(structure=new1,weights=wn1,thresholds=tn1)
+            save.saveStruct(info=new1.pack())
+            g=Gene(structure=new1,weights=wn1,thresholds=tn1)
+            g.set()
+            yield g
         mark=[]
         if passCheck or self.check(x=t1,f=t2,size=size,mark=mark):
             new2=GeneStructure(gsNew=self.structure)
             new2.appendSynapse(origin=t2,terminus=t1)
             p=0
             flag=0
-            for i in range(0,new2.sizeN):
+            for i in range(0,len(new2.neurons)):
                 for j in new2.neurons[i]:
                     if j==t1:
                         flag=1
@@ -112,7 +141,11 @@ class Gene:
             wn2.insert(p,0)
             tn2=self.thresholds
             new2.sort()
-            yield Gene(structure=new2,weights=wn2,thresholds=tn2)
+            save.saveStruct(info=new2.pack())
+            g=Gene(structure=new2,weights=wn2,thresholds=tn2)
+            g.set()
+            yield g
+
     def mutation(self):
         for i in range(0,len(self.weights)):
             if uniform(0,1)<RATE_MATE:
@@ -120,6 +153,7 @@ class Gene:
         for i in range(0,len(self.thresholds)):
             if uniform(0,1)<RATE_MATE:
                 self.thresholds[i]+=uniform(0-MAX_N,MAX_N)
+        self.set()
 
     def debug(self):
         print 'Infos of \'this\' gene:'

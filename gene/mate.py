@@ -23,4 +23,6 @@ def mate(gene1,gene2):
             t3.append(t1[i])
         else:
             t3.append(t2[i])
-    return Gene(structure=gene1.structure,weights=w3,thresholds=t3)
+    g=Gene(structure=gene1.structure,weights=w3,thresholds=t3)
+    g.set()
+    return g

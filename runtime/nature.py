@@ -5,21 +5,34 @@ from unitplay import UnitPlay
 from goplay.gopoint import GoPoint
 from specie import Specie
 from settings import MAX_SCORE,RESOURCE,SIZE_BOARD
+from gene.gene import Gene,GeneStructure
 import os
 
 
 class Nature:
-    def __init__(self,firstSpecie):
-        self.species=[firstSpecie]
-        self.generation=0
-        self.resource=0.0
-        self.cntGenes=1
+    def __init__(self,species,generation,restResource,):
+        self.species=species
+        self.generation=generation
+        self.resource=restResource
+        self.cntGenes=0
+        self.menu={}
 
-    def loop(self):
-        print 'New generation ^_^'
+    def showInfo(self):
         print 'Generation:',self.generation
         print 'And now we have _%d_ genes'%self.cntGenes
         print 'In _%d_ species'%len(self.species)
+        print 'Menu:'
+        print self.menu
+
+    def loop(self):
+        self.cntGenes=0
+        self.menu={}
+        for s in self.species:
+            self.cntGenes+=len(s.genes)
+            self.menu[s.num]=[]
+            for g in s.genes:
+                self.menu[s.num].append(g.num)
+        self.showInfo()
         averfitness=0.0
         newspecies=[]
         newgenes = []
@@ -28,7 +41,7 @@ class Nature:
             for n in s.newSpecies():
                 newspecies.append(n)
         for n in newspecies:
-            self.species.append(Specie(firstMember=n,appearTime=self.generation))
+            self.species.append(Specie(members=[n],appearTime=self.generation))
         for s in self.species:
             for n in s.newGenes():
                 newgenes.append(n)
@@ -62,9 +75,6 @@ class Nature:
         while len(dieList):
             self.resource+=self.happyCorner(unlucky=dieList[0])
             del dieList[0]
-        self.cntGenes=0
-        for s in self.species:
-            self.cntGenes+=len(s.genes)
         self.generation+=1
 
     def fight(self,newUnit,oldUnit):
@@ -100,6 +110,28 @@ class Nature:
                     i.fitness-=i.record[unlucky.num]
         return unlucky.fitness
 
+    def packCurrent(self):
+        current=\
+        {
+            '_id':0,
+            'gene':Gene.cnt,
+            'structure':GeneStructure.cnt,
+            'generation':self.generation,
+            'restRes':self.resource
+        }
+        info=[current]
+        i=1
+        for s in self.species:
+            current=\
+            {
+                '_id':i,
+                'num':s.num,
+                'genes':[gene.num for gene in s.genes],
+                'appear':s.appearTime
+            }
+            i+=1
+            info.append(current)
+        return info
 
 
 

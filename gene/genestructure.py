@@ -6,23 +6,27 @@ import os
 
 class GeneStructure:
     cnt=0
-    def __init__(self,gsNew):
-        self.num=GeneStructure.cnt
-        GeneStructure.cnt+=1
+    def __init__(self,gsNew,fromDB=0,num=-1,neurons=[],sizeS=0):
         self.order=[]
-        self.nextMember=0
-        try:
-            self.neurons=copy.deepcopy(gsNew.neurons)
-            self.sizeN=gsNew.sizeN
-            self.sizeS=gsNew.sizeS
-        except:
-            self.neurons=[]
-            self.sizeN=0
-            self.sizeS=0
+        if not fromDB:
+            try:
+                GeneStructure.cnt+=1
+                self.num=GeneStructure.cnt
+                self.neurons=copy.deepcopy(gsNew.neurons)
+                self.sizeS=gsNew.sizeS
+            except Exception,e:
+                print Exception,e
+        else:
+            self.num=num
+            self.neurons=copy.deepcopy(neurons)
+            self.sizeS=sizeS
+            self.sort()
+
+    def pack(self):
+        return {'_id':self.num,'neurons':self.neurons,'size':self.sizeS}
 
     def appendNeuron(self):
         self.neurons.append([])
-        self.sizeN+=1
         return len(self.neurons)-1
 
     def appendSynapse(self,origin,terminus):

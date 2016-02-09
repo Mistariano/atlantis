@@ -1,5 +1,6 @@
 __author__ = 'MisT'
 
+from copy import deepcopy
 from unit.unit import Unit
 from random import choice
 from gene.mate import mate
@@ -7,20 +8,18 @@ from gene.gene import Gene
 from settings import SPEED_MUTATION,SPEED_MATE,SIZE_BOARD,SIZE_OUTPUT,SIZE_SENSOR,WHO_MATE
 
 class Specie:
-    cnt=0
-    def __init__(self,firstMember,appearTime):
-        self.num=Specie.cnt
-        Specie.cnt+=1
-        print 'Specie [%d] has been settled.' % self.num
-        self.genes=[firstMember]
+    def __init__(self,members,appearTime):
+        self.genes=members
         self.newBorn=[]
         self.newSpiecesList=[]
         self.dieList=[]
-        self.newGenesList=[firstMember]
-        self.billyKing=firstMember
+        self.newGenesList=members
+        self.billyKing=members[0]
         self.appearTime=appearTime
         self.fitness=0
         self.sum=0
+        self.num=members[0].structure.num
+        print 'Specie [%d] has been settled.' % self.num
 
     def load(self,gene):
         return Unit(gene=gene)
