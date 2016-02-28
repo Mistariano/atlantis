@@ -15,6 +15,7 @@ class GoPoint:
         self.member=[[self.x,self.y]]
         self.qi=-1
         self.qiGroup=0
+        self.groupRank=0
 
     def move(self,color):
         self.color=color
@@ -27,6 +28,7 @@ class GoPoint:
                 yield g
 
     def die(self):
+        self.groupRank=0
         self.qi=-1
         self.color=GoPoint.NULL
         self.group=[self.x,self.y]

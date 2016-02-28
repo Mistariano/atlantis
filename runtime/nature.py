@@ -6,6 +6,7 @@ from goplay.gopoint import GoPoint
 from specie import Specie
 from settings import MAX_SCORE,RESOURCE,SIZE_BOARD
 from gene.gene import Gene,GeneStructure
+from save import saveCurrent
 import os
 
 
@@ -75,6 +76,7 @@ class Nature:
         while len(dieList):
             self.resource+=self.happyCorner(unlucky=dieList[0])
             del dieList[0]
+        saveCurrent(self.packCurrent())
         self.generation+=1
 
     def fight(self,newUnit,oldUnit):

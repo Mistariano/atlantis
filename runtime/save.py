@@ -13,9 +13,15 @@ def saveStruct(info):
     structBase.insert(info)
 
 def saveGene(info):
-    geneBase.insert(info)
+    try:
+        geneBase.insert(info)
+    except Exception,e:
+        print e
+        print 'info:'
+        print info
 
 def saveCurrent(info):
+    print 'saving...'
     current.drop()
     for i in info:
         current.insert(i)

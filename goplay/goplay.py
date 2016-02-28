@@ -3,7 +3,6 @@
 __author__ = 'MisT'
 
 from gopoint import GoPoint
-from pybloom import BloomFilter
 import os
 import copy
 
@@ -11,7 +10,8 @@ class GoPlay:
     MAXC=1000
     def __init__(self, size):
         self.cntC=0
-        self.bestFriend=BloomFilter(capacity=GoPlay.MAXC)
+        # self.bestFriend=BloomFilter(capacity=GoPlay.MAXC)
+        self.valueSet=set([])
         self.size = size
         self.MIN=0
         self.MAX=self.size+1
@@ -26,6 +26,7 @@ class GoPlay:
 
     def loop(self):
         while not self.end():
+            # self.output()
             self.getXY()
             i=0
             while self.move():
@@ -39,7 +40,6 @@ class GoPlay:
                     self.isPass+=1
                 else:
                     self.isPass=0
-            # self.output()
             self.cleanFrbidn()
             self.nextPlayer=not self.nextPlayer
 
@@ -121,19 +121,21 @@ class GoPlay:
             return 1
     #禁全局同形：
         v=self.boardValue()
-        self.copyValue(copy=safeCopy)
-        if v in self.bestFriend:
+        # self.copyValue(copy=safeCopy)
+        # if v in self.bestFriend:
+        if v in self.valueSet:
             self.board=copy.deepcopy(safeCopy)
             self.board[self.x][self.y].become_frbidn()
             return 1
-        self.bestFriend.add(v)
-        self.cntC+=1
-        if self.cntC>=GoPlay.MAXC:
-            print 'bf is too little,continue?'
-            os.system('pause')
-            self.MAXC*=2
-            new=BloomFilter(capacity=GoPlay.MAXC)
-            self.bestFriend=new.union(other=self.bestFriend)
+        # self.bestFriend.add(v)
+        self.valueSet.add(v)
+        # self.cntC+=1
+        # if self.cntC>=GoPlay.MAXC:
+        #     print 'bf is too little,continue?'
+        #     os.system('pause')
+        #     self.MAXC*=2
+        #     new=BloomFilter(capacity=GoPlay.MAXC)
+        #     self.bestFriend=new.union(other=self.bestFriend)
     #结束：
         return 0
 
@@ -186,10 +188,22 @@ class GoPlay:
     def groupUnion(self,g1,g2):
         group1=self.groupFind(g=self.board[g1[0]][g1[1]].group)
         group2=self.groupFind(g=self.board[g2[0]][g2[1]].group)
+        father1=self.board[group1[0]][group1[1]]
+        father2=self.board[group2[0]][group2[1]]
         if group2!=group1:
-            self.board[group1[0]][group1[1]].group=group2
-            self.board[group2[0]][group2[1]].member.append(group1)
-            self.board[group2[0]][group2[1]].qiGroup+=self.board[group1[0]][group1[1]].qiGroup
+            if father1.groupRank<father2.groupRank:
+                father1.group=group2
+                father2.member.append(group1)
+                father2.qiGroup+=father1.qiGroup
+            if father1.groupRank>father2.groupRank:
+                father2.group=group1
+                father1.member.append(group2)
+                father1.qiGroup+=father2.qiGroup
+            if father1.groupRank==father2.groupRank:
+                father1.group=group2
+                father2.groupRank+=1
+                father2.member.append(group1)
+                father2.qiGroup+=father1.qiGroup
 
     def groupCheck(self,g):
         if not self.groupQi(g=g):

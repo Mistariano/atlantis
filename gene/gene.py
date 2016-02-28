@@ -5,6 +5,8 @@ from random import randrange,choice,uniform
 from copy import deepcopy
 from settings import RATE_MATE,MAX_S,MAX_N
 from runtime import save
+import sys
+
 
 class Gene:
     cnt=0
@@ -26,7 +28,8 @@ class Gene:
                 'weights':self.weights,
                 'thresholds':self.thresholds,
                 'fitness':self.fitness,
-                'record':self.record
+                # 'record':self.record
+                'record':{}
             }
             return info
         except NumException:
@@ -88,10 +91,12 @@ class Gene:
         r1=[i for i in range(0,sizeS) or i in range(sizeS+sizeO,self.structure.sizeN)]
         r2=[]
         while not len(r2):
-            try:
-                r1.remove(t1)
-            except Exception,e:
-                print Exception,e
+            if t1!=-1:
+                try:
+                    r1.remove(t1)
+                except Exception,e:
+                    print Exception,e
+                    print t1
             if not len(r1):
                 return
             t1=choice(r1)

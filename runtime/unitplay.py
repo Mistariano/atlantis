@@ -4,6 +4,7 @@ __author__ = 'MisT'
 
 from goplay.goplay import GoPlay
 from goplay.gopoint import GoPoint
+from operator import itemgetter
 
 class UnitPlay(GoPlay):
     def loadUnit(self,ub,uw):
@@ -32,22 +33,36 @@ class UnitPlay(GoPlay):
                     else:
                         inputs.append(self.board[xx][yy].color)
             if self.nextPlayer:
-                self.ans = self.unitBlack.startDash(inputs=inputs)
+                ans = self.unitBlack.startDash(inputs=inputs)
             else:
-                self.ans = self.unitWhite.startDash(inputs=inputs)
-        max=-1
-        index=-1
-        for i in range(0,len(self.ans)):
-            if self.board[i/self.size+1][i%self.size+1].color==GoPoint.NULL:
-                if max<self.ans[i]:
-                    max=self.ans[i]
-                    index=i
-        if max==-1:
+                ans = self.unitWhite.startDash(inputs=inputs)
+            self.allowed=[]
+            for i in range(0,len(ans)):
+                if self.board[i/self.size+1][i%self.size+1].color==GoPoint.NULL:
+                    self.allowed.append([i,ans[i]])
+            self.allowed.sort(key=itemgetter(1),reverse=True)
+            # print'[DEBUG]=============================='
+        # print '[DEBUG]',self.allowed
+        if not len(self.allowed):
             self.x=-1
             self.y=-1
         else:
-            self.x=index/self.size+1
-            self.y=index%self.size+1
+            self.x=self.allowed[0][0]/self.size+1
+            self.y=self.allowed[0][0]%self.size+1
+            del self.allowed[0]
+        # max=-1
+        # index=-1
+        # for i in range(0,len(self.ans)):
+        #     if self.board[i/self.size+1][i%self.size+1].color==GoPoint.NULL:
+        #         if max<self.ans[i]:
+        #             max=self.ans[i]
+        #             index=i
+        # if max==-1:
+        #     self.x=-1
+        #     self.y=-1
+        # else:
+        #     self.x=index/self.size+1
+        #     self.y=index%self.size+1
 
     def output(self):
         draw=self.draw()
@@ -74,4 +89,4 @@ class UnitPlay(GoPlay):
         # print 'Result:'
         # print 'B:',self.res_cnt[GoPoint.BLACK],'W:',self.res_cnt[GoPoint.WHITE]
         # if self.res_cnt[GoPoint.BLACK]+self.res_cnt[GoPoint.WHITE]!=self.size**2:
-        #     self.output()
+        # self.output()
