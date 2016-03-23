@@ -25,26 +25,28 @@ class Specie:
         return Unit(gene=gene)
 
     def breed(self):
-        if len(self.genes)>1:
+        if len(self.genes)>7:
             r=[i for i in (1,WHO_MATE) if i<len(self.genes)]
             for i in range(0,SPEED_MATE):
                 wife=choice(r)
                 new1=mate(gene1=self.genes[0],gene2=self.genes[wife])
                 self.newGenesList.append(new1)
                 self.genes.append(new1)
+        if len(self.genes)>5:
+            t=choice(self.genes)
+            new2=Gene(structure=t.structure,weights=t.weights,thresholds=t.thresholds)
+            new3=Gene(structure=t.structure,weights=t.weights,thresholds=t.thresholds)
+            new2.addNRand()
+            self.newSpiecesList.append(new2)
+            for n in new3.getSRand(sizeO=SIZE_OUTPUT,sizeS=SIZE_SENSOR):
+                self.newSpiecesList.append(n)
         for i in range(0,SPEED_MUTATION):
             tmp=choice(self.genes)
             new1=Gene(structure=tmp.structure,weights=tmp.weights,thresholds=tmp.thresholds)
             new1.mutation()
             self.newGenesList.append(new1)
             self.genes.append(new1)
-        t=choice(self.genes)
-        new2=Gene(structure=t.structure,weights=t.weights,thresholds=t.thresholds)
-        new3=Gene(structure=t.structure,weights=t.weights,thresholds=t.thresholds)
-        new2.addNRand()
-        self.newSpiecesList.append(new2)
-        for n in new3.getSRand(sizeO=SIZE_OUTPUT,sizeS=SIZE_SENSOR):
-            self.newSpiecesList.append(n)
+
 
     def newSpecies(self):
         for n in self.newSpiecesList:
@@ -65,7 +67,7 @@ class Specie:
         for g in self.genes:
             self.sum+=g.fitness
         # self.fitness=len(self.genes)*self.sum
-        self.fitness=self.sum
+        self.fitness=1.0/(self.sum*len(self.genes))
 
     def distribute(self,resource):
         while len(self.genes):

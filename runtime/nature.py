@@ -34,7 +34,7 @@ class Nature:
             for g in s.genes:
                 self.menu[s.num].append(g.num)
         self.showInfo()
-        averfitness=0.0
+        sumfitness=0.0
         newspecies=[]
         newgenes = []
         for s in self.species:
@@ -56,14 +56,14 @@ class Nature:
         for s in self.species:
             s.sort()
             s.recountFitness()
-            averfitness+=s.fitness
-        averfitness/=len(self.species)
+            sumfitness+=s.fitness
+        # sumfitness/=len(self.species)
         self.resource+=RESOURCE
         dieList=[]
         i=0
         while i <len(self.species):
             s=self.species[i]
-            r=self.resource*(averfitness/(s.fitness+1))/len(self.species)
+            r=self.resource*(s.fitness)/sumfitness
             print '[%d] get resource:%d'%(s.num,r)
             for d in s.distribute(resource=r):
                 dieList.append(d)
@@ -74,7 +74,8 @@ class Nature:
             i+=1
         self.resource=0.0
         while len(dieList):
-            self.resource+=self.happyCorner(unlucky=dieList[0])
+            # self.resource+=self.happyCorner(unlucky=dieList[0])
+            self.happyCorner(unlucky=dieList[0])
             del dieList[0]
         saveCurrent(self.packCurrent())
         self.generation+=1

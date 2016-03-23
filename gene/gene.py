@@ -19,23 +19,17 @@ class Gene:
         self.record=record
 
     def pack(self):
-        try:
-            if self.num==-1:
-                raise NumException
-            info=\
-            {
-                '_id':self.num,
-                'weights':self.weights,
-                'thresholds':self.thresholds,
-                'fitness':self.fitness,
-                # 'record':self.record
-                'record':{}
-            }
-            return info
-        except NumException:
-            print 'NumException'
-        except Exception,e:
-            print Exception,e
+        record={str(k): v for k, v in self.record.items()}
+        info=\
+        {
+            '_id':self.num,
+            'weights':self.weights,
+            'thresholds':self.thresholds,
+            'fitness':self.fitness,
+            'record':record
+            # 'record':{}
+        }
+        return info
 
 
     def set(self):

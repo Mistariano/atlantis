@@ -45,7 +45,7 @@ for s in spicies:
         weights=curGene['weights']
         thresholds=curGene['thresholds']
         fitness=curGene['fitness']
-        record=curGene['record']
+        record={int(k):v for k,v in dict(curGene['record']).items()}
         num=curGene['_id']
         gene=Gene(structure=structure,weights=weights,thresholds=thresholds,fitness=fitness,record=record,num=num)
         members.append(gene)
